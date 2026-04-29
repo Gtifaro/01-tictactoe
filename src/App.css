@@ -73,3 +73,38 @@
   background-color: transparent;
   color: white;
 }
+
+.modal_overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 10;
+}
+
+.modal {
+  background: rgba(10, 14, 34, 0.95);
+  border: 2px solid white;
+  border-radius: 18px;
+  padding: 2rem;
+  width: min(90%, 28rem);
+  text-align: center;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.modal_title {
+  margin: 0 0 0.75rem;
+  font-size: 2rem;
+}
+
+.modal_message {
+  margin: 0 0 1.5rem;
+  font-size: 1.1rem;
+  color: #dfe7ff;
+}
+
+.modal_button {
+  width: 100%;
+  max-width: 14rem;
+}
