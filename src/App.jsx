@@ -5,6 +5,7 @@ function App() {
   const [board, setBoard] = useState(Array(9).fill(null));
   const [turn, setTurn] = useState("X");
   const [winner, setWinner] = useState(null);
+  const [tie, setTie] = useState(false);
   
   const checkWinner = (board, player) => {
     const winningCombinations = [
@@ -24,8 +25,8 @@ function App() {
   }
 
   const handleClick = (id) => {
-    // No permitir celdas ocupadas o continuar después de ganador
-    if (board[id] !== null || winner) return;
+    // No permitir celdas ocupadas o continuar después de ganador o empate
+    if (board[id] !== null || winner || tie) return;
     
     let newBoard = [...board];
     newBoard[id] = turn;
@@ -36,6 +37,8 @@ function App() {
     
     if (winningPlayer) {
       setWinner(winningPlayer);
+    } else if (newBoard.every(cell => cell !== null)) {
+      setTie(true);
     }
   };
 
@@ -43,6 +46,7 @@ function App() {
     setBoard(Array(9).fill(null));
     setTurn("X");
     setWinner(null);
+    setTie(false);
   };
 
   return (
@@ -67,6 +71,18 @@ function App() {
           <div className="modal">
             <h2 className="modal_title">Ganó {winner}</h2>
             <p className="modal_message">Felicitaciones, el jugador {winner} ganó la partida.</p>
+            <button className="tic_restart modal_button" onClick={handleRestart}>
+              Jugar de nuevo
+            </button>
+          </div>
+        </div>
+      )}
+
+      {tie && (
+        <div className="modal_overlay">
+          <div className="modal">
+            <h2 className="modal_title">Empate</h2>
+            <p className="modal_message">La partida terminó en empate.</p>
             <button className="tic_restart modal_button" onClick={handleRestart}>
               Jugar de nuevo
             </button>
