@@ -2,8 +2,14 @@ import { useState } from "react";
 import "./App.css";
 
 function App() {
-  const [board, setBoard] = useState(Array(9).fill(null));
-  const [turn, setTurn] = useState("X");
+  const [board, setBoard] = useState(() => {
+    const savedBoard = window.localStorage.getItem('board');
+    return savedBoard ? JSON.parse(savedBoard) : Array(9).fill(null);
+  });
+  const [turn, setTurn] = useState(() => {
+    const savedTurn = window.localStorage.getItem('turn');
+    return savedTurn ? JSON.parse(savedTurn) : "X";
+  });
   const [winner, setWinner] = useState(null);
   const [tie, setTie] = useState(false);
   
@@ -30,9 +36,12 @@ function App() {
     
     let newBoard = [...board];
     newBoard[id] = turn;
+    let newTurn = turn === "X" ? "O" : "X";
     setBoard(newBoard);
-    setTurn(turn === "X" ? "O" : "X");
-
+    setTurn(newTurn);
+    window.localStorage.setItem('board', JSON.stringify(newBoard))
+    window.localStorage.setItem('turn', JSON.stringify(newTurn))
+    
     let winningPlayer = checkWinner(newBoard, turn);
     
     if (winningPlayer) {
@@ -47,6 +56,8 @@ function App() {
     setTurn("X");
     setWinner(null);
     setTie(false);
+    window.localStorage.removeItem('board')
+    window.localStorage.removeItem('turn')
   };
 
   return (
