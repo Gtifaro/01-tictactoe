@@ -1,0 +1,120 @@
+import { useState } from "react";
+
+function Tictactoe() {
+  const [board, setBoard] = useState(() => {
+    const savedBoard = window.localStorage.getItem("board");
+    return savedBoard ? JSON.parse(savedBoard) : Array(9).fill(null);
+  });
+  const [turn, setTurn] = useState(() => {
+    const savedTurn = window.localStorage.getItem("turn");
+    return savedTurn ? JSON.parse(savedTurn) : "X";
+  });
+  const [winner, setWinner] = useState(null);
+  const [tie, setTie] = useState(false);
+
+  const checkWinner = (board, player) => {
+    const winningCombinations = [
+      [0, 1, 2], // filas
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6], // columnas
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8], // diagonales
+      [2, 4, 6],
+    ];
+
+    return winningCombinations.some((combination) =>
+      combination.every((index) => board[index] === player),
+    )
+      ? player
+      : null;
+  };
+
+  const handleClick = (id) => {
+    // No permitir celdas ocupadas o continuar después de ganador o empate
+    if (board[id] !== null || winner || tie) return;
+
+    let newBoard = [...board];
+    newBoard[id] = turn;
+    let newTurn = turn === "X" ? "O" : "X";
+    setBoard(newBoard);
+    setTurn(newTurn);
+    window.localStorage.setItem("board", JSON.stringify(newBoard));
+    window.localStorage.setItem("turn", JSON.stringify(newTurn));
+
+    let winningPlayer = checkWinner(newBoard, turn);
+
+    if (winningPlayer) {
+      setWinner(winningPlayer);
+    } else if (newBoard.every((cell) => cell !== null)) {
+      setTie(true);
+    }
+  };
+
+  const handleRestart = () => {
+    setBoard(Array(9).fill(null));
+    setTurn("X");
+    setWinner(null);
+    setTie(false);
+    window.localStorage.removeItem("board");
+    window.localStorage.removeItem("turn");
+  };
+
+  return (
+    <main className="tic_container">
+      <h1 className="tic_title">Tic Tac Toe</h1>
+      <div className="tic_board">
+        {board.map((cell, idx) => {
+          return (
+            <span
+              key={`tic-cell-${idx}`}
+              onClick={() => handleClick(idx)}
+              className="board_cell"
+            >
+              {cell}
+            </span>
+          );
+        })}
+      </div>
+      <h2 className="tic_nextTurn">Es el turno de: {turn}</h2>
+      {winner && (
+        <div className="modal_overlay">
+          <div className="modal">
+            <h2 className="modal_title">Ganó {winner}</h2>
+            <p className="modal_message">
+              Felicitaciones, el jugador {winner} ganó la partida.
+            </p>
+            <button
+              className="tic_restart modal_button"
+              onClick={handleRestart}
+            >
+              Jugar de nuevo
+            </button>
+          </div>
+        </div>
+      )}
+
+      {tie && (
+        <div className="modal_overlay">
+          <div className="modal">
+            <h2 className="modal_title">Empate</h2>
+            <p className="modal_message">La partida terminó en empate.</p>
+            <button
+              className="tic_restart modal_button"
+              onClick={handleRestart}
+            >
+              Jugar de nuevo
+            </button>
+          </div>
+        </div>
+      )}
+
+      <button className="tic_restart" onClick={handleRestart}>
+        Reiniciar
+      </button>
+    </main>
+  );
+}
+
+export default Tictactoe;
